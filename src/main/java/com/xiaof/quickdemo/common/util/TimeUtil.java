@@ -30,6 +30,60 @@ public final class TimeUtil {
         return LocalDateTime.parse(timeStr, DEFAULT_DATETIME_FORMATTER);
     }
 
+    /**
+     * String 转时间
+     *
+     * @param timeStr
+     * @param format  时间格式
+     * @return
+     */
+    public static LocalDateTime parseTime(String timeStr, TimeFormat format) {
+        return LocalDateTime.parse(timeStr, format.formatter);
+    }
+
+    /**
+     * 时间转 String
+     *
+     * @param time
+     * @return
+     */
+    public static String parseTime(LocalDateTime time) {
+        return DEFAULT_DATETIME_FORMATTER.format(time);
+    }
+
+    /**
+     * 时间转 String
+     *
+     * @param time
+     * @param format 时间格式
+     * @return
+     */
+    public static String parseTime(LocalDateTime time, TimeFormat format) {
+        return format.formatter.format(time);
+    }
+
+    /**
+     * 获取当前时间
+     *
+     * @return
+     */
+    public static String getCurrentDatetime() {
+        return DEFAULT_DATETIME_FORMATTER.format(LocalDateTime.now());
+    }
+
+    /**
+     * 获取当前时间
+     *
+     * @param format 时间格式
+     * @return
+     */
+    public static String getCurrentDatetime(TimeFormat format) {
+        return format.formatter.format(LocalDateTime.now());
+    }
+
+    /**
+     * 时间格式
+     */
     public enum TimeFormat {
         /**
          * 短时间格式

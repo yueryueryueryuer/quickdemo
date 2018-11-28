@@ -1,9 +1,11 @@
 package com.xiaof.quickdemo.core.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,10 +14,10 @@ import java.util.Date;
  * @author: TaoXiaoFeng
  * @date: 2018/11/21 09:33
  */
-@Getter
-@Setter
-@ToString
-public class Log {
+@EqualsAndHashCode(callSuper = true)
+@Data
+@TableName("t_core_log")
+public class Log extends Model<Log> {
 
     /**
      * 日志ID
@@ -66,4 +68,9 @@ public class Log {
      * 方法参数
      */
     private String params;
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 }

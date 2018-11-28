@@ -2,7 +2,8 @@ package com.xiaof.quickdemo.common.aspect;
 
 
 import com.xiaof.quickdemo.common.annotation.CoreLog;
-import org.apache.shiro.SecurityUtils;
+import com.xiaof.quickdemo.common.enums.log.LogType;
+import com.xiaof.quickdemo.core.domain.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -38,15 +39,16 @@ public class CoreLogAspect {
         long beginTime = System.currentTimeMillis();
         Object result = point.proceed();
         long endTime = System.currentTimeMillis();
-        return null;
+        saveLog(point, endTime - beginTime);
+        return result;
     }
 
-    public void saveLog(ProceedingJoinPoint point,long time){
+    private void saveLog(ProceedingJoinPoint point, long time) {
         //获取当前请求对象
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
         //获取当前用户
-        SecurityUtils.getSubject().getPrincipal();
+//        User user = (User) SecurityUtils.getSubject().getPrincipal();
 
         //获取切入点
         MethodSignature signature = (MethodSignature) point.getSignature();
@@ -55,6 +57,31 @@ public class CoreLogAspect {
         //获取操作内容
         CoreLog annotation = method.getAnnotation(CoreLog.class);
         String operation = annotation.value();
+
+        //获取日志对象
+        Log log = new Log();
+
+        String className = point.getTarget().getClass().getName();
+        String methodName = method.getName();
+        log.setMethod(className + "." + methodName + "()");
+        Object[] args = point.getArgs();
+        String[] parameterNames = signature.getParameterNames();
+        for (int i = 0; i < args.length; i++) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(parameterNames[i])
+                    .append(": ")
+                    .append(args[i])
+                    .append("; ");
+            log.setParams(sb.toString());
+        }
+        log.setIp(request.getRemoteAddr());
+        log.setType(LogType.ACTION.getValue());
+//        log.setUsername(user.getUsername());
+        log.setTime(time);
+        log.setOperation(operation);
+        log.setUri(request.getRequestURI());
+        log.insert();
+
 
     }
 }
